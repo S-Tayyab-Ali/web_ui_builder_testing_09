@@ -5,18 +5,28 @@ import { X, Download, Heart, Play, Pause } from 'lucide-react';
 import { Wallpaper } from '@/lib/wallpaper-data';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/lib/auth-context';
+import { isFavorite, addFavorite, removeFavorite } from '@/lib/favorites';
 
 interface PreviewModalProps {
   wallpaper: Wallpaper | null;
   isOpen: boolean;
   onClose: () => void;
+  onAuthRequired?: () => void;
 }
 
-export default function PreviewModal({ wallpaper, isOpen, onClose }: PreviewModalProps) {
+export default function PreviewModal({ wallpaper, isOpen, onClose, onAuthRequired }: PreviewModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [favorite, setFavorite] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (wallpaper) {
+      setFavorite(isFavorite(wallpaper.id));
+    }
+  }, [wallpaper]);
 
   useEffect(() => {
     if (isOpen && videoRef.current) {
@@ -51,6 +61,21 @@ export default function PreviewModal({ wallpaper, isOpen, onClose }: PreviewModa
         videoRef.current.play();
       }
       setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleFavoriteClick = () => {
+    if (!user || !wallpaper) {
+      onAuthRequired?.();
+      return;
+    }
+    
+    if (favorite) {
+      removeFavorite(wallpaper.id);
+      setFavorite(false);
+    } else {
+      addFavorite(wallpaper.id);
+      setFavorite(true);
     }
   };
 
@@ -150,10 +175,10 @@ export default function PreviewModal({ wallpaper, isOpen, onClose }: PreviewModa
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsFavorite(!isFavorite)}
-              className={`text-white hover:bg-white/20 ${isFavorite ? 'text-red-500' : ''}`}
+              onClick={handleFavoriteClick}
+              className={`text-white hover:bg-white/20 ${favorite ? 'text-red-500' : ''}`}
             >
-              <Heart className={`h-5 w-5 ${isFavorite ? 'fill-current' : ''}`} />
+              <Heart className={`h-5 w-5 ${favorite ? 'fill-current' : ''}`} />
             </Button>
             <Button
               onClick={handleDownload}

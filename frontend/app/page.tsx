@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import WallpaperCard from '@/components/WallpaperCard';
 import PreviewModal from '@/components/PreviewModal';
 import SearchFilterBar from '@/components/SearchFilterBar';
+import AuthModal from '@/components/AuthModal';
 import { mockWallpapers, Wallpaper } from '@/lib/wallpaper-data';
 
 export default function Home() {
@@ -12,6 +13,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [previewWallpaper, setPreviewWallpaper] = useState<Wallpaper | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Filter wallpapers based on search and category
   const filteredWallpapers = useMemo(() => {
@@ -81,6 +83,7 @@ export default function Home() {
                 key={wallpaper.id}
                 wallpaper={wallpaper}
                 onPreview={handlePreview}
+                onAuthRequired={() => setIsAuthModalOpen(true)}
               />
             ))}
           </div>
@@ -100,7 +103,15 @@ export default function Home() {
         wallpaper={previewWallpaper}
         isOpen={isPreviewOpen}
         onClose={handleClosePreview}
+        onAuthRequired={() => setIsAuthModalOpen(true)}
+      />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
       />
     </div>
   );
 }
+

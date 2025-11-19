@@ -1,24 +1,44 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Heart, Download, Eye } from 'lucide-react';
 import { Wallpaper } from '@/lib/wallpaper-data';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/lib/auth-context';
+import { isFavorite, addFavorite, removeFavorite } from '@/lib/favorites';
 
 interface WallpaperCardProps {
   wallpaper: Wallpaper;
   onPreview: (wallpaper: Wallpaper) => void;
+  onAuthRequired?: () => void;
 }
 
-export default function WallpaperCard({ wallpaper, onPreview }: WallpaperCardProps) {
+export default function WallpaperCard({ wallpaper, onPreview, onAuthRequired }: WallpaperCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [favorite, setFavorite] = useState(false);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    setFavorite(isFavorite(wallpaper.id));
+  }, [wallpaper.id]);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsFavorite(!isFavorite);
+    
+    if (!user) {
+      onAuthRequired?.();
+      return;
+    }
+    
+    if (favorite) {
+      removeFavorite(wallpaper.id);
+      setFavorite(false);
+    } else {
+      addFavorite(wallpaper.id);
+      setFavorite(true);
+    }
   };
 
   const formatNumber = (num: number) => {
@@ -70,10 +90,10 @@ export default function WallpaperCard({ wallpaper, onPreview }: WallpaperCardPro
         <Button
           variant="ghost"
           size="icon"
-          className={`absolute top-2 right-2 bg-black/50 hover:bg-black/70 transition-all duration-200 ${isFavorite ? 'text-red-500' : 'text-white'}`}
+          className={`absolute top-2 right-2 bg-black/50 hover:bg-black/70 transition-all duration-200 ${favorite ? 'text-red-500' : 'text-white'}`}
           onClick={handleFavoriteClick}
         >
-          <Heart className={`h-5 w-5 ${isFavorite ? 'fill-current' : ''}`} />
+          <Heart className={`h-5 w-5 ${favorite ? 'fill-current' : ''}`} />
         </Button>
       </div>
 
@@ -100,3 +120,4 @@ export default function WallpaperCard({ wallpaper, onPreview }: WallpaperCardPro
     </div>
   );
 }
+

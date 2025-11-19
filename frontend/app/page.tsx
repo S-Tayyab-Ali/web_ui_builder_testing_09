@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import WallpaperCard from '@/components/WallpaperCard';
 import PreviewModal from '@/components/PreviewModal';
 import SearchFilterBar from '@/components/SearchFilterBar';
@@ -111,7 +112,10 @@ export default function Home() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
       />
+      
+      <Footer />
     </div>
   );
 }
+
 

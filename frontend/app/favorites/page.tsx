@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import WallpaperCard from '@/components/WallpaperCard';
 import PreviewModal from '@/components/PreviewModal';
 import AuthModal from '@/components/AuthModal';
@@ -117,6 +118,9 @@ export default function FavoritesPage() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
       />
+      
+      <Footer />
     </div>
   );
 }
+

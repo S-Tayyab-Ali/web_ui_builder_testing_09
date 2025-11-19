@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import WallpaperCard from '@/components/WallpaperCard';
 import PreviewModal from '@/components/PreviewModal';
 import AuthModal from '@/components/AuthModal';
@@ -136,6 +137,9 @@ export default function CategoriesPage() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
       />
+      
+      <Footer />
     </div>
   );
 }
+

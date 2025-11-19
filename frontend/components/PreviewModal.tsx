@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/lib/auth-context';
 import { isFavorite, addFavorite, removeFavorite } from '@/lib/favorites';
+import { toast } from 'sonner';
 
 interface PreviewModalProps {
   wallpaper: Wallpaper | null;
@@ -73,9 +74,11 @@ export default function PreviewModal({ wallpaper, isOpen, onClose, onAuthRequire
     if (favorite) {
       removeFavorite(wallpaper.id);
       setFavorite(false);
+      toast.success('Removed from favorites');
     } else {
       addFavorite(wallpaper.id);
       setFavorite(true);
+      toast.success('Added to favorites');
     }
   };
 
@@ -83,6 +86,7 @@ export default function PreviewModal({ wallpaper, isOpen, onClose, onAuthRequire
     if (!wallpaper) return;
     
     setIsDownloading(true);
+    toast.loading('Preparing download...');
     try {
       const response = await fetch(wallpaper.downloadUrl);
       const blob = await response.blob();
@@ -94,8 +98,10 @@ export default function PreviewModal({ wallpaper, isOpen, onClose, onAuthRequire
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+      toast.success('Download started!');
     } catch (error) {
       console.error('Download failed:', error);
+      toast.error('Download failed. Please try again.');
     } finally {
       setIsDownloading(false);
     }
@@ -194,3 +200,4 @@ export default function PreviewModal({ wallpaper, isOpen, onClose, onAuthRequire
     </div>
   );
 }
+

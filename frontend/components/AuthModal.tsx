@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/lib/auth-context';
+import { toast } from 'sonner';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     try {
       if (mode === 'login') {
         await login(email, password);
+        toast.success('Welcome back!');
       } else {
         if (!displayName.trim()) {
           setError('Display name is required');
@@ -38,6 +40,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           return;
         }
         await register(email, password, displayName);
+        toast.success('Account created successfully!');
       }
       onClose();
       // Reset form
@@ -46,6 +49,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
       setDisplayName('');
     } catch (err) {
       setError('Authentication failed. Please try again.');
+      toast.error('Authentication failed');
     } finally {
       setIsLoading(false);
     }
@@ -161,3 +165,4 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     </div>
   );
 }
+
